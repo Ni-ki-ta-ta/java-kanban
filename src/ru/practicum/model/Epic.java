@@ -1,7 +1,9 @@
+package ru.practicum.model;
+
 import java.util.ArrayList;
 
 public class Epic extends Task{
-    private ArrayList<Integer> subtaskIds;
+    private final ArrayList<Integer> subtaskIds;
 
     public Epic(String name, String description){
         super(name, description);
@@ -19,10 +21,6 @@ public class Epic extends Task{
         return subtaskIds;
     }
 
-    public void setSubtaskIds(ArrayList<Integer> subtaskIds) {
-        this.subtaskIds = subtaskIds;
-    }
-
     public void addSubtaskId(int subtaskId){
         subtaskIds.add(subtaskId);
     }
@@ -37,7 +35,7 @@ public class Epic extends Task{
 
     @Override
     public String toString() {
-        return "Epic{" +
+        return "ru.practicum.model.Epic{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +

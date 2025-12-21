@@ -1,3 +1,5 @@
+package ru.practicum.model;
+
 import java.util.Objects;
 
 public class Task {
@@ -12,6 +14,7 @@ public class Task {
         this.description = description;
         this.type = TaskType.TASK;
         this.status = TaskStatus.NEW;
+        this.id = 0;
     }
 
     public Task(String name, String description, int id, TaskStatus status){
@@ -19,6 +22,15 @@ public class Task {
         this.description = description;
         this.type = TaskType.TASK;
         this.status = status;
+        this.id = id;
+    }
+
+    public Task(String name, String description, TaskStatus status) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.type = TaskType.TASK;
+        this.id = 0;
     }
 
     public String getName() {
@@ -61,10 +73,7 @@ public class Task {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id &&
-                Objects.equals(name, task.name) &&
-                Objects.equals(description, task.description) &&
-                type == task.type && status == task.status;
+        return id == task.id;
     }
 
     @Override
@@ -74,7 +83,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "ru.practicum.model.Task{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +
