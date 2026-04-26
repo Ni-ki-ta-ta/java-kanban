@@ -31,7 +31,7 @@ public class InMemoryTaskManager implements TaskManager {
     private void updateEpicStatus(Epic epic) {
         List<Integer> subtaskIds = epic.getSubtaskIds();
 
-        if(subtaskIds.isEmpty()) {
+        if (subtaskIds.isEmpty()) {
             epic.setStatus(TaskStatus.NEW);
             return;
         }
@@ -44,15 +44,15 @@ public class InMemoryTaskManager implements TaskManager {
             if (subtask == null) continue;
 
             TaskStatus taskStatus = subtask.getStatus();
-            if(taskStatus != TaskStatus.NEW) {
+            if (taskStatus != TaskStatus.NEW) {
                 allNew = false;
             }
-            if(taskStatus != TaskStatus.DONE) {
+            if (taskStatus != TaskStatus.DONE) {
                 allDone = false;
             }
         }
 
-        if(allNew) {
+        if (allNew) {
             epic.setStatus(TaskStatus.NEW);
         } else if (allDone) {
             epic.setStatus(TaskStatus.DONE);
