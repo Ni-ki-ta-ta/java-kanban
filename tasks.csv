@@ -1,0 +1,5 @@
+id,type,name,status,description,epic
+1,TASK,Файл: задача,NEW,Описание задачи,
+4,TASK,После загрузки,NEW,OK,
+2,EPIC,Файл: эпик,NEW,Описание эпика,
+3,SUBTASK,Файл: подзадача,NEW,Описание подзадачи,2
