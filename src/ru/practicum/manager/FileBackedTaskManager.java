@@ -150,9 +150,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 return new Epic(name, description, id, status);
 
             case SUBTASK:
-                int epicId = fields.length > 5 && !fields[5].isBlank()
-                        ? Integer.parseInt(fields[5].trim())
-                        : 0;
+                if (fields.length <= 5 || fields[5].isBlank()) {
+                    throw new IllegalArgumentException("Для подзадачи не указан epicId");
+                }
+
+                int epicId = Integer.parseInt(fields[5].trim());
                 return new Subtask(name, description, id, status, epicId);
 
             default:
@@ -165,7 +167,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         try {
             String content = java.nio.file.Files.readString(file.toPath());
-            String[] lines = content.split("\n");
+            String[] lines = content.split("\\R");
 
             int maxId = 0;
 
