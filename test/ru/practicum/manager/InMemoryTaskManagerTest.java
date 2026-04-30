@@ -179,4 +179,49 @@ class InMemoryTaskManagerTest {
         assertNotEquals(task1, task3);
         assertNotEquals(task1.hashCode(), task3.hashCode());
     }
+
+    @Test
+    void removedTaskShouldDisappearFromHistory() {
+        Task task = manager.createTask(new Task("Task", "Desc", TaskStatus.NEW));
+
+        manager.getTaskById(task.getId());
+        manager.deleteTaskById(task.getId());
+
+        List<Task> history = manager.getHistory();
+
+        assertTrue(history.isEmpty(),
+                "Удалённая задача не должна оставаться в истории");
+    }
+
+    @Test
+    void historyShouldUpdateWhenTaskViewedMultipleTimes() {
+        Task task1 = manager.createTask(new Task("Task 1", "Desc", TaskStatus.NEW));
+        Task task2 = manager.createTask(new Task("Task 2", "Desc", TaskStatus.NEW));
+
+        manager.getTaskById(task1.getId());
+        manager.getTaskById(task2.getId());
+        manager.getTaskById(task1.getId());
+
+        List<Task> history = manager.getHistory();
+
+        assertEquals(2, history.size(),
+                "История не должна содержать дубликаты");
+
+        assertEquals(task2, history.get(0),
+                "task2 должна остаться первой");
+
+        assertEquals(task1, history.get(1),
+                "task1 должна переместиться в конец после повторного просмотра");
+    }
+
+    @Test
+    void epicShouldNotContainDeletedSubtask() {
+        Epic epic = manager.createEpic(new Epic("Epic", "Desc"));
+        Subtask subtask = manager.createSubtask(new Subtask("Sub", "Desc", epic.getId()));
+
+        manager.deleteSubtaskById(subtask.getId());
+
+        assertFalse(epic.getSubtaskIds().contains(subtask.getId()),
+                "Удалённая подзадача не должна оставаться в эпике");
+    }
 }

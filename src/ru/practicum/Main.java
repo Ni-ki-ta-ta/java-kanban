@@ -5,6 +5,9 @@ import ru.practicum.manager.Managers;
 import ru.practicum.model.Epic;
 import ru.practicum.model.Subtask;
 import ru.practicum.model.Task;
+import ru.practicum.manager.FileBackedTaskManager;
+
+import java.io.File;
 
 import java.util.List;
 
@@ -42,7 +45,7 @@ public class Main {
         manager.getSubtaskById(subtask1.getId());
         printHistory(manager.getHistory());
 
-        System.out.println("5. ТЕСТИРУЕМ ЛИМИТ ИСТОРИИ (10 записей):");
+        System.out.println("5. ТЕСТИРУЕМ ПОВТОРНЫЕ ПРОСМОТРЫ:");
 
         for (int i = 0; i < 15; i++) {
             manager.getTaskById(task1.getId());
@@ -65,6 +68,44 @@ public class Main {
 
         System.out.println("7. ВСЕ ЗАДАЧИ В СИСТЕМЕ:");
         printAllTasks(manager);
+
+        System.out.println("\n8. РАБОТА С ФАЙЛОВЫМ МЕНЕДЖЕРОМ:");
+
+        File file = new File("tasks.csv");
+
+        TaskManager fileManager = new FileBackedTaskManager(file);
+
+        System.out.println("8.1. СОЗДАЕМ ЗАДАЧИ В ФАЙЛОВОМ МЕНЕДЖЕРЕ:");
+
+        Task fileTask = fileManager.createTask(new Task("Файл: задача", "Описание задачи"));
+        Epic fileEpic = fileManager.createEpic(new Epic("Файл: эпик", "Описание эпика"));
+        Subtask fileSub = fileManager.createSubtask(
+                new Subtask("Файл: подзадача", "Описание подзадачи", fileEpic.getId())
+        );
+
+        printAllTasks(fileManager);
+
+        System.out.println("\n8.2. ПРОСМОТР ЗАДАЧ (ФОРМИРУЕМ ИСТОРИЮ):");
+
+        fileManager.getTaskById(fileTask.getId());
+        fileManager.getEpicById(fileEpic.getId());
+        fileManager.getSubtaskById(fileSub.getId());
+
+        printHistory(fileManager.getHistory());
+
+        System.out.println("\n8.3. ПЕРЕЗАГРУЖАЕМ МЕНЕДЖЕР ИЗ ФАЙЛА:");
+
+        TaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
+
+        System.out.println("Данные после загрузки:");
+        printAllTasks(loadedManager);
+
+        System.out.println("\n8.4. ПРОВЕРЯЕМ ПРОДОЛЖЕНИЕ РАБОТЫ:");
+
+        Task newTask = loadedManager.createTask(new Task("После загрузки", "OK"));
+        System.out.println("Создана новая задача с ID = " + newTask.getId());
+
+        printAllTasks(loadedManager);
     }
 
     private static void printHistory(List<Task> history) {
