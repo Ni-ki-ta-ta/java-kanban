@@ -6,6 +6,7 @@ import ru.practicum.model.Epic;
 import ru.practicum.model.Subtask;
 import ru.practicum.model.Task;
 import ru.practicum.manager.FileBackedTaskManager;
+import ru.practicum.model.TaskStatus;
 
 import java.io.File;
 
@@ -68,6 +69,75 @@ public class Main {
 
         System.out.println("7. ВСЕ ЗАДАЧИ В СИСТЕМЕ:");
         printAllTasks(manager);
+
+        System.out.println("\n7.1. ТЕСТИРУЕМ ВРЕМЯ И ПРОДОЛЖИТЕЛЬНОСТЬ:");
+
+        Task timedTask = new Task(
+                "Задача со временем",
+                "Проверка времени",
+                ru.practicum.model.TaskStatus.NEW,
+                java.time.Duration.ofMinutes(90),
+                java.time.LocalDateTime.of(2025, 1, 1, 10, 0)
+        );
+
+        manager.createTask(timedTask);
+
+        System.out.println(timedTask);
+
+        Epic timedEpic = manager.createEpic(
+                new Epic("Эпик со временем", "Проверка времени эпика")
+        );
+
+        Subtask timedSub1 = new Subtask(
+                "Подзадача 1",
+                "30 минут",
+                timedEpic.getId()
+        );
+
+        timedSub1.setDuration(java.time.Duration.ofMinutes(30));
+        timedSub1.setStartTime(
+                java.time.LocalDateTime.of(2025, 1, 1, 9, 0)
+        );
+
+        manager.createSubtask(timedSub1);
+
+        Subtask timedSub2 = new Subtask(
+                "Подзадача 2",
+                "60 минут",
+                timedEpic.getId()
+        );
+
+        timedSub2.setDuration(java.time.Duration.ofMinutes(60));
+        timedSub2.setStartTime(
+                java.time.LocalDateTime.of(2025, 1, 1, 12, 0)
+        );
+
+        manager.createSubtask(timedSub2);
+
+        System.out.println("Эпик после расчёта времени:");
+        System.out.println(manager.getEpicById(timedEpic.getId()));
+        System.out.println("\nПРИОРИТЕТ ЗАДАЧ:");
+
+        for (Task task : manager.getPrioritizedTasks()) {
+            System.out.println(task);
+        }
+
+        System.out.println("\nПРОВЕРКА ПЕРЕСЕЧЕНИЙ:");
+
+        Task overlapTask = new Task(
+                "Пересечение",
+                "Ошибка",
+                TaskStatus.NEW,
+                java.time.Duration.ofMinutes(30),
+                java.time.LocalDateTime.of(2025, 1, 1, 10, 30)
+        );
+
+        try {
+            manager.createTask(overlapTask);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Обнаружено пересечение задач:");
+            System.out.println(e.getMessage());
+        }
 
         System.out.println("\n8. РАБОТА С ФАЙЛОВЫМ МЕНЕДЖЕРОМ:");
 

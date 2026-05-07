@@ -1,9 +1,11 @@
 package ru.practicum.model;
 
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 
 public class Epic extends Task {
     private final ArrayList<Integer> subtaskIds;
+    private LocalDateTime endTime;
 
     public Epic(String name, String description) {
         super(name, description);
@@ -33,6 +35,10 @@ public class Epic extends Task {
         subtaskIds.clear();
     }
 
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
     @Override
     public String toString() {
         return "ru.practicum.model.Epic{" +
@@ -42,6 +48,14 @@ public class Epic extends Task {
                 ", status=" + status +
                 ", type=" + type +
                 ", subtaskIds=" + subtaskIds +
+                ", duration=" + getDuration() +
+                ", startTime=" + getStartTime() +
+                ", endTime=" + getEndTime() +
                 '}';
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 }

@@ -1,5 +1,6 @@
 package ru.practicum.manager;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.practicum.model.*;
 
@@ -8,7 +9,14 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FileBackedTaskManagerTest {
+class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
+    private File file;
+
+    @BeforeEach
+    void setUp() throws IOException {
+        file = File.createTempFile("test", ".csv");
+        manager = new FileBackedTaskManager(file);
+    }
 
     @Test
     void shouldSaveAndLoadEmptyFile() throws IOException {
@@ -99,5 +107,39 @@ class FileBackedTaskManagerTest {
 
         assertEquals(2, newTask.getId(),
                 "ID должен продолжаться после загрузки");
+    }
+
+    @Test
+    void shouldSaveAndRestoreHistory() throws IOException {
+
+        Task task = manager.createTask(
+                new Task("Task", "Desc")
+        );
+
+        manager.getTaskById(task.getId());
+
+        FileBackedTaskManager loaded =
+                FileBackedTaskManager.loadFromFile(file);
+
+        assertEquals(1,
+                loaded.getHistory().size(),
+                "История должна восстановиться");
+
+        assertEquals(task.getId(),
+                loaded.getHistory().get(0).getId(),
+                "ID задачи в истории должен сохраниться");
+    }
+
+    @Test
+    void shouldNotThrowWhenSavingAndLoading() {
+        assertDoesNotThrow(() -> {
+
+            Task task = manager.createTask(
+                    new Task("Task", "Desc")
+            );
+
+            FileBackedTaskManager.loadFromFile(file);
+
+        }, "Сохранение и загрузка не должны выбрасывать исключения");
     }
 }
