@@ -48,10 +48,15 @@ public class Main {
 
         System.out.println("5. ТЕСТИРУЕМ ПОВТОРНЫЕ ПРОСМОТРЫ:");
 
-        for (int i = 0; i < 15; i++) {
-            manager.getTaskById(task1.getId());
-            manager.getEpicById(epic1.getId());
-        }
+        final Task finalTask1 = task1;
+        final Epic finalEpic1 = epic1;
+
+        java.util.stream.IntStream.range(0, 15)
+                .forEach(i -> {
+                    manager.getTaskById(finalTask1.getId());
+                    manager.getEpicById(finalEpic1.getId());
+                });
+
         printHistory(manager.getHistory());
 
         System.out.println("6. ТЕСТИРУЕМ ПОРЯДОК ИСТОРИИ:");
@@ -118,9 +123,8 @@ public class Main {
         System.out.println(manager.getEpicById(timedEpic.getId()));
         System.out.println("\nПРИОРИТЕТ ЗАДАЧ:");
 
-        for (Task task : manager.getPrioritizedTasks()) {
-            System.out.println(task);
-        }
+        manager.getPrioritizedTasks()
+                .forEach(System.out::println);
 
         System.out.println("\nПРОВЕРКА ПЕРЕСЕЧЕНИЙ:");
 
@@ -185,39 +189,43 @@ public class Main {
         }
 
         System.out.println("История просмотров (" + history.size() + "):");
-        for (int i = 0; i < history.size(); i++) {
-            Task task = history.get(i);
-            System.out.println((i + 1) + ". " + task.getType() +
-                    " [ID:" + task.getId() + "] " +
-                    task.getName() + " - " + task.getStatus());
-        }
+        java.util.stream.IntStream.range(0, history.size())
+                .forEach(i -> {
+                    Task task = history.get(i);
+
+                    System.out.println((i + 1) + ". "
+                            + task.getType()
+                            + " [ID:" + task.getId() + "] "
+                            + task.getName()
+                            + " - "
+                            + task.getStatus());
+                });
     }
 
     private static void printAllTasks(TaskManager manager) {
         System.out.println("Обычные задачи:");
-        for (Task task : manager.getAllTasks()) {
-            System.out.println("  " + task);
-        }
+        manager.getAllTasks()
+                .forEach(task -> System.out.println("  " + task));
 
         System.out.println("Эпики:");
-        for (Epic epic : manager.getAllEpics()) {
+
+        manager.getAllEpics().forEach(epic -> {
             System.out.println("  " + epic);
 
-            for (Task subtask : manager.getSubtasksByEpicId(epic.getId())) {
-                System.out.println("    → " + subtask);
-            }
-        }
+            manager.getSubtasksByEpicId(epic.getId())
+                    .forEach(subtask ->
+                            System.out.println("    → " + subtask));
+        });
 
         System.out.println("Подзадачи:");
-        for (Task subtask : manager.getAllSubtasks()) {
-            System.out.println("  " + subtask);
-        }
+        manager.getAllSubtasks()
+                .forEach(subtask -> System.out.println("  " + subtask));
 
         System.out.println("История просмотров:");
-        for (Task task : manager.getHistory()) {
-            System.out.println("  " + task.getType() +
-                    " [ID:" + task.getId() + "] " +
-                    task.getName());
-        }
+        manager.getHistory().forEach(task ->
+                System.out.println("  "
+                        + task.getType()
+                        + " [ID:" + task.getId() + "] "
+                        + task.getName()));
     }
 }

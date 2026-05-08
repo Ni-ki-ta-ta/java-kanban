@@ -99,20 +99,32 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
             writer.write("id,type,name,status,description,duration,startTime,epic\n");
 
-            for (Epic epic : getAllEpics()) {
-                writer.write(toString(epic));
-                writer.newLine();
-            }
+            getAllEpics().forEach(epic -> {
+                try {
+                    writer.write(toString(epic));
+                    writer.newLine();
+                } catch (IOException e) {
+                    throw new ManagerSaveException("Ошибка сохранения");
+                }
+            });
 
-            for (Task task : getAllTasks()) {
-                writer.write(toString(task));
-                writer.newLine();
-            }
+            getAllTasks().forEach(task -> {
+                try {
+                    writer.write(toString(task));
+                    writer.newLine();
+                } catch (IOException e) {
+                    throw new ManagerSaveException("Ошибка сохранения");
+                }
+            });
 
-            for (Subtask subtask : getAllSubtasks()) {
-                writer.write(toString(subtask));
-                writer.newLine();
-            }
+            getAllSubtasks().forEach(subtask -> {
+                try {
+                    writer.write(toString(subtask));
+                    writer.newLine();
+                } catch (IOException e) {
+                    throw new ManagerSaveException("Ошибка сохранения");
+                }
+            });
 
             writer.newLine();
 
@@ -276,17 +288,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
             }
 
-            for (Subtask subtask : manager.subtasks.values()) {
+            manager.subtasks.values().forEach(subtask -> {
                 Epic epic = manager.epics.get(subtask.getEpicId());
+
                 if (epic != null) {
                     epic.addSubtaskId(subtask.getId());
                 }
-            }
+            });
 
-            for (Epic epic : manager.epics.values()) {
+            manager.epics.values().forEach(epic -> {
                 manager.updateEpicStatus(epic);
                 manager.updateEpicTime(epic);
-            }
+            });
 
             String historyLine = "";
 
@@ -303,7 +316,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
             java.util.List<Integer> historyIds = historyFromString(historyLine);
 
-            for (Integer id : historyIds) {
+            historyIds.forEach(id -> {
 
                 Task task = manager.tasks.get(id);
 
@@ -318,7 +331,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 if (task != null) {
                     manager.historyManager.add(task);
                 }
-            }
+            });
 
             manager.taskCounter = maxId + 1;
 

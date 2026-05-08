@@ -40,6 +40,11 @@ public class Epic extends Task {
     }
 
     @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    @Override
     public String toString() {
         return "ru.practicum.model.Epic{" +
                 "name='" + name + '\'' +
@@ -52,10 +57,5 @@ public class Epic extends Task {
                 ", startTime=" + getStartTime() +
                 ", endTime=" + getEndTime() +
                 '}';
-    }
-
-    @Override
-    public LocalDateTime getEndTime() {
-        return endTime;
     }
 }
