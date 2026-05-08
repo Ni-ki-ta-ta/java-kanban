@@ -5,6 +5,10 @@ import ru.practicum.manager.Managers;
 import ru.practicum.model.Epic;
 import ru.practicum.model.Subtask;
 import ru.practicum.model.Task;
+import ru.practicum.manager.FileBackedTaskManager;
+import ru.practicum.model.TaskStatus;
+
+import java.io.File;
 
 import java.util.List;
 
@@ -42,12 +46,17 @@ public class Main {
         manager.getSubtaskById(subtask1.getId());
         printHistory(manager.getHistory());
 
-        System.out.println("5. ТЕСТИРУЕМ ЛИМИТ ИСТОРИИ (10 записей):");
+        System.out.println("5. ТЕСТИРУЕМ ПОВТОРНЫЕ ПРОСМОТРЫ:");
 
-        for (int i = 0; i < 15; i++) {
-            manager.getTaskById(task1.getId());
-            manager.getEpicById(epic1.getId());
-        }
+        final Task finalTask1 = task1;
+        final Epic finalEpic1 = epic1;
+
+        java.util.stream.IntStream.range(0, 15)
+                .forEach(i -> {
+                    manager.getTaskById(finalTask1.getId());
+                    manager.getEpicById(finalEpic1.getId());
+                });
+
         printHistory(manager.getHistory());
 
         System.out.println("6. ТЕСТИРУЕМ ПОРЯДОК ИСТОРИИ:");
@@ -65,6 +74,112 @@ public class Main {
 
         System.out.println("7. ВСЕ ЗАДАЧИ В СИСТЕМЕ:");
         printAllTasks(manager);
+
+        System.out.println("\n7.1. ТЕСТИРУЕМ ВРЕМЯ И ПРОДОЛЖИТЕЛЬНОСТЬ:");
+
+        Task timedTask = new Task(
+                "Задача со временем",
+                "Проверка времени",
+                ru.practicum.model.TaskStatus.NEW,
+                java.time.Duration.ofMinutes(90),
+                java.time.LocalDateTime.of(2025, 1, 1, 10, 0)
+        );
+
+        manager.createTask(timedTask);
+
+        System.out.println(timedTask);
+
+        Epic timedEpic = manager.createEpic(
+                new Epic("Эпик со временем", "Проверка времени эпика")
+        );
+
+        Subtask timedSub1 = new Subtask(
+                "Подзадача 1",
+                "30 минут",
+                timedEpic.getId()
+        );
+
+        timedSub1.setDuration(java.time.Duration.ofMinutes(30));
+        timedSub1.setStartTime(
+                java.time.LocalDateTime.of(2025, 1, 1, 9, 0)
+        );
+
+        manager.createSubtask(timedSub1);
+
+        Subtask timedSub2 = new Subtask(
+                "Подзадача 2",
+                "60 минут",
+                timedEpic.getId()
+        );
+
+        timedSub2.setDuration(java.time.Duration.ofMinutes(60));
+        timedSub2.setStartTime(
+                java.time.LocalDateTime.of(2025, 1, 1, 12, 0)
+        );
+
+        manager.createSubtask(timedSub2);
+
+        System.out.println("Эпик после расчёта времени:");
+        System.out.println(manager.getEpicById(timedEpic.getId()));
+        System.out.println("\nПРИОРИТЕТ ЗАДАЧ:");
+
+        manager.getPrioritizedTasks()
+                .forEach(System.out::println);
+
+        System.out.println("\nПРОВЕРКА ПЕРЕСЕЧЕНИЙ:");
+
+        Task overlapTask = new Task(
+                "Пересечение",
+                "Ошибка",
+                TaskStatus.NEW,
+                java.time.Duration.ofMinutes(30),
+                java.time.LocalDateTime.of(2025, 1, 1, 10, 30)
+        );
+
+        try {
+            manager.createTask(overlapTask);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Обнаружено пересечение задач:");
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("\n8. РАБОТА С ФАЙЛОВЫМ МЕНЕДЖЕРОМ:");
+
+        File file = new File("tasks.csv");
+
+        TaskManager fileManager = new FileBackedTaskManager(file);
+
+        System.out.println("8.1. СОЗДАЕМ ЗАДАЧИ В ФАЙЛОВОМ МЕНЕДЖЕРЕ:");
+
+        Task fileTask = fileManager.createTask(new Task("Файл: задача", "Описание задачи"));
+        Epic fileEpic = fileManager.createEpic(new Epic("Файл: эпик", "Описание эпика"));
+        Subtask fileSub = fileManager.createSubtask(
+                new Subtask("Файл: подзадача", "Описание подзадачи", fileEpic.getId())
+        );
+
+        printAllTasks(fileManager);
+
+        System.out.println("\n8.2. ПРОСМОТР ЗАДАЧ (ФОРМИРУЕМ ИСТОРИЮ):");
+
+        fileManager.getTaskById(fileTask.getId());
+        fileManager.getEpicById(fileEpic.getId());
+        fileManager.getSubtaskById(fileSub.getId());
+
+        printHistory(fileManager.getHistory());
+
+        System.out.println("\n8.3. ПЕРЕЗАГРУЖАЕМ МЕНЕДЖЕР ИЗ ФАЙЛА:");
+
+        TaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
+
+        System.out.println("Данные после загрузки:");
+        printAllTasks(loadedManager);
+
+        System.out.println("\n8.4. ПРОВЕРЯЕМ ПРОДОЛЖЕНИЕ РАБОТЫ:");
+
+        Task newTask = loadedManager.createTask(new Task("После загрузки", "OK"));
+        System.out.println("Создана новая задача с ID = " + newTask.getId());
+
+        printAllTasks(loadedManager);
     }
 
     private static void printHistory(List<Task> history) {
@@ -74,39 +189,43 @@ public class Main {
         }
 
         System.out.println("История просмотров (" + history.size() + "):");
-        for (int i = 0; i < history.size(); i++) {
-            Task task = history.get(i);
-            System.out.println((i + 1) + ". " + task.getType() +
-                    " [ID:" + task.getId() + "] " +
-                    task.getName() + " - " + task.getStatus());
-        }
+        java.util.stream.IntStream.range(0, history.size())
+                .forEach(i -> {
+                    Task task = history.get(i);
+
+                    System.out.println((i + 1) + ". "
+                            + task.getType()
+                            + " [ID:" + task.getId() + "] "
+                            + task.getName()
+                            + " - "
+                            + task.getStatus());
+                });
     }
 
     private static void printAllTasks(TaskManager manager) {
         System.out.println("Обычные задачи:");
-        for (Task task : manager.getAllTasks()) {
-            System.out.println("  " + task);
-        }
+        manager.getAllTasks()
+                .forEach(task -> System.out.println("  " + task));
 
         System.out.println("Эпики:");
-        for (Epic epic : manager.getAllEpics()) {
+
+        manager.getAllEpics().forEach(epic -> {
             System.out.println("  " + epic);
 
-            for (Task subtask : manager.getSubtasksByEpicId(epic.getId())) {
-                System.out.println("    → " + subtask);
-            }
-        }
+            manager.getSubtasksByEpicId(epic.getId())
+                    .forEach(subtask ->
+                            System.out.println("    → " + subtask));
+        });
 
         System.out.println("Подзадачи:");
-        for (Task subtask : manager.getAllSubtasks()) {
-            System.out.println("  " + subtask);
-        }
+        manager.getAllSubtasks()
+                .forEach(subtask -> System.out.println("  " + subtask));
 
         System.out.println("История просмотров:");
-        for (Task task : manager.getHistory()) {
-            System.out.println("  " + task.getType() +
-                    " [ID:" + task.getId() + "] " +
-                    task.getName());
-        }
+        manager.getHistory().forEach(task ->
+                System.out.println("  "
+                        + task.getType()
+                        + " [ID:" + task.getId() + "] "
+                        + task.getName()));
     }
 }

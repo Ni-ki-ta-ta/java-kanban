@@ -1,6 +1,6 @@
 package ru.practicum.model;
 
-public class Subtask extends Task{
+public class Subtask extends Task {
     private int epicId;
 
     public Subtask(String name, String description, int epicId) {
@@ -32,6 +32,9 @@ public class Subtask extends Task{
                 ", status=" + status +
                 ", type=" + type +
                 ", epicId=" + epicId +
+                ", duration=" + getDuration() +
+                ", startTime=" + getStartTime() +
+                ", endTime=" + getEndTime() +
                 '}';
     }
 }
