@@ -1,11 +1,19 @@
 package ru.practicum.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class Epic extends Task{
+public class Epic extends Task {
     private final ArrayList<Integer> subtaskIds;
+    private LocalDateTime endTime;
 
-    public Epic(String name, String description){
+    public Epic() {
+        super("", "");
+        this.subtaskIds = new ArrayList<>();
+        this.type = TaskType.EPIC;
+    }
+
+    public Epic(String name, String description) {
         super(name, description);
         this.subtaskIds = new ArrayList<>();
         this.type = TaskType.EPIC;
@@ -21,16 +29,25 @@ public class Epic extends Task{
         return subtaskIds;
     }
 
-    public void addSubtaskId(int subtaskId){
+    public void addSubtaskId(int subtaskId) {
         subtaskIds.add(subtaskId);
     }
 
-    public void removeSubtaskId(int subtaskId){
+    public void removeSubtaskId(int subtaskId) {
         subtaskIds.remove((Integer) subtaskId);
     }
 
-    public void clearSubtaskIds(){
+    public void clearSubtaskIds() {
         subtaskIds.clear();
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     @Override
@@ -42,6 +59,9 @@ public class Epic extends Task{
                 ", status=" + status +
                 ", type=" + type +
                 ", subtaskIds=" + subtaskIds +
+                ", duration=" + getDuration() +
+                ", startTime=" + getStartTime() +
+                ", endTime=" + getEndTime() +
                 '}';
     }
 }
