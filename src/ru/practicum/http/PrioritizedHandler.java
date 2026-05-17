@@ -25,11 +25,11 @@ public class PrioritizedHandler extends BaseHttpHandler {
                     manager.getPrioritizedTasks()
             );
 
-            sendText(exchange, response, 200);
+            sendText(exchange, response, STATUS_OK);
 
         } else {
 
-            exchange.sendResponseHeaders(405, 0);
+            exchange.sendResponseHeaders(STATUS_METHOD_NOT_ALLOWED, 0);
             exchange.close();
         }
     }

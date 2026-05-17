@@ -34,7 +34,7 @@ public class SubtasksHandler extends BaseHttpHandler {
 
                     String response = gson.toJson(manager.getAllSubtasks());
 
-                    sendText(exchange, response, 200);
+                    sendText(exchange, response, STATUS_OK);
 
                 } else if (pathParts.length == 3) {
 
@@ -49,7 +49,7 @@ public class SubtasksHandler extends BaseHttpHandler {
 
                     String response = gson.toJson(subtask);
 
-                    sendText(exchange, response, 200);
+                    sendText(exchange, response, STATUS_OK);
                 }
 
             } else if (method.equals("POST")) {
@@ -72,7 +72,7 @@ public class SubtasksHandler extends BaseHttpHandler {
                     manager.updateSubtask(subtask);
                 }
 
-                sendText(exchange, "Подзадача сохранена", 201);
+                sendText(exchange, "Подзадача сохранена", STATUS_CREATED);
 
             } else if (method.equals("DELETE")) {
 
@@ -80,11 +80,11 @@ public class SubtasksHandler extends BaseHttpHandler {
 
                 manager.deleteSubtaskById(id);
 
-                sendText(exchange, "Подзадача удалена", 200);
+                sendText(exchange, "Подзадача удалена", STATUS_OK);
 
             } else {
 
-                exchange.sendResponseHeaders(405, 0);
+                exchange.sendResponseHeaders(STATUS_METHOD_NOT_ALLOWED, 0);
                 exchange.close();
             }
 

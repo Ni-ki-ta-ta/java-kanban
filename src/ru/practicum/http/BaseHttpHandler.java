@@ -8,6 +8,13 @@ import java.nio.charset.StandardCharsets;
 
 public abstract class BaseHttpHandler implements HttpHandler {
 
+    protected static final int STATUS_OK = 200;
+    protected static final int STATUS_CREATED = 201;
+    protected static final int STATUS_NOT_FOUND = 404;
+    protected static final int STATUS_NOT_ACCEPTABLE = 406;
+    protected static final int STATUS_INTERNAL_ERROR = 500;
+    protected static final int STATUS_METHOD_NOT_ALLOWED = 405;
+
     protected void sendText(HttpExchange exchange,
                             String text,
                             int statusCode) throws IOException {
@@ -25,18 +32,18 @@ public abstract class BaseHttpHandler implements HttpHandler {
     }
 
     protected void sendNotFound(HttpExchange exchange) throws IOException {
-        sendText(exchange, "Ресурс не найден", 404);
+        sendText(exchange, "Ресурс не найден", STATUS_NOT_FOUND);
     }
 
     protected void sendHasInteractions(HttpExchange exchange) throws IOException {
         sendText(exchange,
                 "Задача пересекается с существующими",
-                406);
+                STATUS_NOT_ACCEPTABLE);
     }
 
     protected void sendInternalError(HttpExchange exchange) throws IOException {
         sendText(exchange,
                 "Внутренняя ошибка сервера",
-                500);
+                STATUS_INTERNAL_ERROR);
     }
 }

@@ -1,6 +1,5 @@
 package ru.practicum.http;
 
-
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import ru.practicum.manager.TaskManager;
@@ -34,7 +33,7 @@ public class TasksHandler extends BaseHttpHandler {
                 if (pathParts.length == 2) {
 
                     String response = gson.toJson(manager.getAllTasks());
-                    sendText(exchange, response, 200);
+                    sendText(exchange, response, STATUS_OK);
 
                 } else if (pathParts.length == 3) {
 
@@ -49,7 +48,7 @@ public class TasksHandler extends BaseHttpHandler {
 
                     String response = gson.toJson(task);
 
-                    sendText(exchange, response, 200);
+                    sendText(exchange, response, STATUS_OK);
                 }
 
             } else if (method.equals("POST")) {
@@ -68,7 +67,7 @@ public class TasksHandler extends BaseHttpHandler {
                     manager.updateTask(task);
                 }
 
-                sendText(exchange, "Задача сохранена", 201);
+                sendText(exchange, "Задача сохранена", STATUS_CREATED);
 
             } else if (method.equals("DELETE")) {
 
@@ -76,11 +75,11 @@ public class TasksHandler extends BaseHttpHandler {
 
                 manager.deleteTaskById(id);
 
-                sendText(exchange, "Задача удалена", 200);
+                sendText(exchange, "Задача удалена", STATUS_OK);
 
             } else {
 
-                exchange.sendResponseHeaders(405, 0);
+                exchange.sendResponseHeaders(STATUS_METHOD_NOT_ALLOWED, 0);
                 exchange.close();
             }
 

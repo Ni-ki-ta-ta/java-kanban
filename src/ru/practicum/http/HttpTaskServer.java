@@ -21,11 +21,8 @@ public class HttpTaskServer {
             .serializeNulls()
             .create();
     private final HttpServer httpServer;
-    private final TaskManager manager;
 
     public HttpTaskServer(TaskManager manager) throws IOException {
-
-        this.manager = manager;
 
         httpServer = HttpServer.create(
                 new InetSocketAddress(8080),

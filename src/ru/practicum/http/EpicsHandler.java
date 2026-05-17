@@ -34,7 +34,7 @@ public class EpicsHandler extends BaseHttpHandler {
 
                     String response = gson.toJson(manager.getAllEpics());
 
-                    sendText(exchange, response, 200);
+                    sendText(exchange, response, STATUS_OK);
 
                 } else if (pathParts.length == 3) {
 
@@ -49,7 +49,7 @@ public class EpicsHandler extends BaseHttpHandler {
 
                     String response = gson.toJson(epic);
 
-                    sendText(exchange, response, 200);
+                    sendText(exchange, response, STATUS_OK);
 
                 } else if (pathParts.length == 4 &&
                         pathParts[3].equals("subtasks")) {
@@ -67,7 +67,7 @@ public class EpicsHandler extends BaseHttpHandler {
                             manager.getSubtasksByEpicId(epicId)
                     );
 
-                    sendText(exchange, response, 200);
+                    sendText(exchange, response, STATUS_OK);
                 }
 
             } else if (method.equals("POST")) {
@@ -90,7 +90,7 @@ public class EpicsHandler extends BaseHttpHandler {
                     manager.updateEpic(epic);
                 }
 
-                sendText(exchange, "Эпик сохранён", 201);
+                sendText(exchange, "Эпик сохранён", STATUS_CREATED);
 
             } else if (method.equals("DELETE")) {
 
@@ -98,11 +98,11 @@ public class EpicsHandler extends BaseHttpHandler {
 
                 manager.deleteEpicById(id);
 
-                sendText(exchange, "Эпик удалён", 200);
+                sendText(exchange, "Эпик удалён", STATUS_OK);
 
             } else {
 
-                exchange.sendResponseHeaders(405, 0);
+                exchange.sendResponseHeaders(STATUS_METHOD_NOT_ALLOWED, 0);
                 exchange.close();
             }
 
