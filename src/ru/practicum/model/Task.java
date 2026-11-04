@@ -1,8 +1,8 @@
 package ru.practicum.model;
 
-import java.util.Objects;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Task {
     protected String name;
@@ -88,6 +88,10 @@ public class Task {
 
     public TaskType getType() {
         return type;
+    }
+
+    public void setType(TaskType type) {
+        this.type = type;
     }
 
     public Duration getDuration() {
