@@ -131,4 +131,48 @@ class InMemoryHistoryManagerTest {
         assertEquals(0, historyManager.getHistory().size(),
                 "Добавление null не должно изменять историю");
     }
+
+    @Test
+    void emptyHistoryShouldReturnEmptyList() {
+        assertTrue(historyManager.getHistory().isEmpty(),
+                "Пустая история должна возвращать пустой список");
+    }
+
+    @Test
+    void shouldRemoveFromBeginning() {
+        Task task1 = new Task("Task 1", "Desc", 1, TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Desc", 2, TaskStatus.NEW);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+
+        historyManager.remove(1);
+
+        List<Task> history = historyManager.getHistory();
+
+        assertEquals(1, history.size(),
+                "После удаления из начала должна остаться одна задача");
+
+        assertEquals(task2, history.get(0),
+                "После удаления первой задачи task2 должна стать первой");
+    }
+
+    @Test
+    void shouldRemoveFromEnd() {
+        Task task1 = new Task("Task 1", "Desc", 1, TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Desc", 2, TaskStatus.NEW);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+
+        historyManager.remove(2);
+
+        List<Task> history = historyManager.getHistory();
+
+        assertEquals(1, history.size(),
+                "После удаления из конца должна остаться одна задача");
+
+        assertEquals(task1, history.get(0),
+                "После удаления последней задачи task1 должна остаться первой");
+    }
 }

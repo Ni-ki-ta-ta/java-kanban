@@ -1,6 +1,8 @@
 package ru.practicum.model;
 
 import java.util.Objects;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Task {
     protected String name;
@@ -8,6 +10,9 @@ public class Task {
     protected int id;
     protected TaskType type;
     protected TaskStatus status;
+
+    private Duration duration;
+    private LocalDateTime startTime;
 
     public Task(String name, String description) {
         this.name = name;
@@ -29,6 +34,22 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
+        this.type = TaskType.TASK;
+        this.id = 0;
+    }
+
+    public Task(String name,
+                String description,
+                TaskStatus status,
+                Duration duration,
+                LocalDateTime startTime) {
+
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.duration = duration;
+        this.startTime = startTime;
+
         this.type = TaskType.TASK;
         this.id = 0;
     }
@@ -69,6 +90,30 @@ public class Task {
         return type;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) {
+            return null;
+        }
+
+        return startTime.plus(duration);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -89,6 +134,9 @@ public class Task {
                 ", id=" + id +
                 ", status=" + status +
                 ", type=" + type +
+                ", duration=" + duration +
+                ", startTime=" + startTime +
+                ", endTime=" + getEndTime() +
                 '}';
     }
 }
