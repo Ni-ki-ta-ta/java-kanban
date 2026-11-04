@@ -17,7 +17,7 @@ public class Task {
         this.id = 0;
     }
 
-    public Task(String name, String description, int id, TaskStatus status){
+    public Task(String name, String description, int id, TaskStatus status) {
         this.name = name;
         this.description = description;
         this.type = TaskType.TASK;

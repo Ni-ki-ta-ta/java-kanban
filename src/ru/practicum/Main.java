@@ -42,7 +42,7 @@ public class Main {
         manager.getSubtaskById(subtask1.getId());
         printHistory(manager.getHistory());
 
-        System.out.println("5. ТЕСТИРУЕМ ЛИМИТ ИСТОРИИ (10 записей):");
+        System.out.println("5. ТЕСТИРУЕМ ПОВТОРНЫЕ ПРОСМОТРЫ:");
 
         for (int i = 0; i < 15; i++) {
             manager.getTaskById(task1.getId());
